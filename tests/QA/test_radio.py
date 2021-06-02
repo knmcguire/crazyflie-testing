@@ -55,7 +55,7 @@ def latency(uri, packet_size=4, count=500):
             start_time = time.time()
             if not link.send_packet(pk):
                 link.close()
-                raise Exception("Send packet timeout!")
+                raise Exception("send_packet() timeout!")
             while True:
                 pk_ack = link.receive_packet(2)
                 if pk_ack is None:
@@ -89,7 +89,7 @@ def bandwidth(uri, packet_size=4, count=500):
             pk.set_header(CRTPPort.LINKCTRL, 0)  # Echo channel
             pk.data = build_data(i, packet_size)
             if not link.send_packet(pk):
-                raise Exception("Send packet timeout!")
+                raise Exception("send_packet() timeout!")
 
         # get the result
         for i in range(count):
@@ -106,7 +106,7 @@ def bandwidth(uri, packet_size=4, count=500):
     except Exception as e:
         link.close()
         raise e
-    
+
     link.close()
     result = count / (end_time - start_time)
     return result
