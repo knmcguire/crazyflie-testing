@@ -65,15 +65,28 @@ def get_devices():
 
     return devices
 
-def load_all_requirements():
-    requirements = glob.glob(REQUIREMENT + '*.toml')
-    req_dict = {}
-    for requirement in requirements:
-        req = toml.load(open(requirement))
-        req_dict.update(req)
 
-    return req_dict
+class Requirements(dict):
+    _instance = None
+
+    def __init__(self):
+        raise RuntimeError('Call instance() instead')
+
+    @classmethod
+    def _read_requirements(cls):
+        requirements = glob.glob(REQUIREMENT + '*.toml')
+        for requirement in requirements:
+            req = toml.load(open(requirement))
+            cls._instance.update(req)
+
+    @classmethod
+    def instance(cls):
+        if cls._instance is None:
+            print('Creating new instance')
+            cls._instance = cls.__new__(cls)
+            cls._read_requirements()
+        return cls._instance
+
 
 def get_requirement(group: str, name: str):
-    req = load_all_requirements()
-    return req['requirement'][group][name]
+    return Requirements.instance()['requirement'][group][name]
