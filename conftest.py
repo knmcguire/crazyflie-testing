@@ -3,6 +3,10 @@ import time
 import toml
 import glob
 
+from typing import Callable
+from typing import NoReturn
+from typing import Optional
+
 import cflib
 from cflib.bootloader import Bootloader
 from cflib.crazyflie import Crazyflie
@@ -54,6 +58,9 @@ class BCDevice:
 
         link.close()
         return False
+
+    def flash(self, path: str, progress_cb: Optional[Callable[[str, int], NoReturn]] = None) -> bool:
+        self.bl.flash_full(cf=self.cf, filename=path, progress_cb=progress_cb, targets=[])
 
 
 def get_devices():
