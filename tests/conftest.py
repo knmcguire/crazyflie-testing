@@ -24,7 +24,7 @@ class BCDevice:
         self.bl = Bootloader(self.link_uri)
 
     def __str__(self):
-        return 'test'
+        return '{} @ {}'.format(self.name, self.link_uri)
 
     def firmware_up(self) -> bool:
         ''' Return true if we can contact the (stm32 based) firmware '''
