@@ -10,8 +10,8 @@ from cflib.crtp.crtpstack import CRTPPacket
 from cflib.crtp.crtpstack import CRTPPort
 
 DIR = os.path.dirname(os.path.realpath(__file__))
-SITE_PATH = os.path.join(DIR, '../sites/')
-REQUIREMENT = os.path.join(DIR, '../requirements/')
+SITE_PATH = os.path.join(DIR, 'sites/')
+REQUIREMENT = os.path.join(DIR, 'requirements/')
 
 
 class BCDevice:
