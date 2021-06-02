@@ -1,6 +1,22 @@
+# The site format is versioned so that we have the option for non-compatible
+# changes in the future.
 version = 1
 
+# This is how you specify a device in your lab, for multiple devices you
+# add multiple [device.name] blocks. The name needs to be unique.
 [device.default]
-type = "cf2.1"
+
+# This is the radio uri of device.
 radio = "radio://0/60/2M/E7E7E7E7E7"
+
+# This is an array of all the decks attached to the device. It can be used
+# to determine which tests can be run against this device.
+# The expected values are the same as the parameter names from the firmware:
+#  "bcAIDeck"
+#  "bcActiveMarker"
+#  "bcBuzzer"
+#  "bcFlow2"
+#  "bcZranger"
+#  "bcLighthouse4"
+#  ...
 decks = []
