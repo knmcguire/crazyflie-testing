@@ -82,7 +82,6 @@ class Requirements(dict):
     @classmethod
     def instance(cls):
         if cls._instance is None:
-            print('Creating new instance')
             cls._instance = cls.__new__(cls)
             cls._read_requirements()
         return cls._instance
