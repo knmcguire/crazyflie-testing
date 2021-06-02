@@ -44,25 +44,35 @@ def build_data(i, packet_size):
 def latency(uri, packet_size=4, count=500):
     link = cflib.crtp.get_link_driver(uri)
 
-    pk = CRTPPacket()
-    pk.set_header(CRTPPort.LINKCTRL, 0)  # Echo channel
+    try:
+        pk = CRTPPacket()
+        pk.set_header(CRTPPort.LINKCTRL, 0)  # Echo channel
 
-    latencies = []
-    for i in range(count):
-        pk.data = build_data(i, packet_size)
+        latencies = []
+        for i in range(count):
+            pk.data = build_data(i, packet_size)
 
-        start_time = time.time()
-        link.send_packet(pk)
-        while True:
-            pk_ack = link.receive_packet(-1)
-            if pk_ack.port == CRTPPort.LINKCTRL and pk_ack.channel == 0:
-                break
-        end_time = time.time()
+            start_time = time.time()
+            if not link.send_packet(pk):
+                link.close()
+                raise Exception("Send packet timeout!")
+            while True:
+                pk_ack = link.receive_packet(2)
+                if pk_ack is None:
+                    link.close()
+                    raise Exception("Receive packet timeout!")
+                if pk_ack.port == CRTPPort.LINKCTRL and pk_ack.channel == 0:
+                    break
+            end_time = time.time()
 
-        # make sure we actually received the expected value
-        i_recv, = struct.unpack('<I', pk_ack.data[0:4])
-        assert(i == i_recv)
-        latencies.append((end_time - start_time) * 1000)
+            # make sure we actually received the expected value
+            i_recv, = struct.unpack('<I', pk_ack.data[0:4])
+            assert(i == i_recv)
+            latencies.append((end_time - start_time) * 1000)
+    except Exception as e:
+        link.close()
+        raise e
+
     link.close()
     result = np.min(latencies)
     return result
@@ -71,24 +81,32 @@ def latency(uri, packet_size=4, count=500):
 def bandwidth(uri, packet_size=4, count=500):
     link = cflib.crtp.get_link_driver(uri)
 
-    # enqueue packets
-    start_time = time.time()
-    for i in range(count):
-        pk = CRTPPacket()
-        pk.set_header(CRTPPort.LINKCTRL, 0)  # Echo channel
-        pk.data = build_data(i, packet_size)
-        link.send_packet(pk)
+    try:
+        # enqueue packets
+        start_time = time.time()
+        for i in range(count):
+            pk = CRTPPacket()
+            pk.set_header(CRTPPort.LINKCTRL, 0)  # Echo channel
+            pk.data = build_data(i, packet_size)
+            if not link.send_packet(pk):
+                raise Exception("Send packet timeout!")
 
-    # get the result
-    for i in range(count):
-        while True:
-            pk_ack = link.receive_packet(-1)
-            if pk_ack.port == CRTPPort.LINKCTRL and pk_ack.channel == 0:
-                break
-        # make sure we actually received the expected value
-        i_recv, = struct.unpack('<I', pk_ack.data[0:4])
-        assert(i_recv == i)
-    end_time = time.time()
+        # get the result
+        for i in range(count):
+            while True:
+                pk_ack = link.receive_packet(2)
+                if pk_ack is None:
+                    raise Exception("Receive packet timeout!")
+                if pk_ack.port == CRTPPort.LINKCTRL and pk_ack.channel == 0:
+                    break
+            # make sure we actually received the expected value
+            i_recv, = struct.unpack('<I', pk_ack.data[0:4])
+            assert(i_recv == i)
+        end_time = time.time()
+    except Exception as e:
+        link.close()
+        raise e
+    
     link.close()
     result = count / (end_time - start_time)
     return result
