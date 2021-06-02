@@ -9,6 +9,9 @@ from cflib.crtp.crtpstack import CRTPPacket
 from cflib.crtp.crtpstack import CRTPPort
 
 import conftest
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 @pytest.mark.parametrize('dev', conftest.get_devices(), ids=lambda d: d.name)
@@ -75,6 +78,8 @@ def latency(uri, packet_size=4, count=500):
 
     link.close()
     result = np.min(latencies)
+    logger.info('latency: {}'.format(result))
+
     return result
 
 
@@ -109,4 +114,6 @@ def bandwidth(uri, packet_size=4, count=500):
 
     link.close()
     result = count / (end_time - start_time)
+    logger.info('bandwidth: {}'.format(result))
+
     return result
