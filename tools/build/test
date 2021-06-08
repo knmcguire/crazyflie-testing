@@ -1,8 +1,5 @@
 #!/usr/bin/env bash
 
-if [ -z ${CRAZY_SITE+x} ];
-then
-    export CRAZY_SITE=single-cf
-fi
+[ -n "$CRAZY_SITE" ] || export CRAZY_SITE=single-cf
 
-pytest --verbose
+pytest --verbose --junit-xml $CRAZY_SITE-$(date +%s).xml
