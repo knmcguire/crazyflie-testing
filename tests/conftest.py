@@ -18,7 +18,6 @@ class BCDevice:
     def __init__(self, name, device):
         cflib.crtp.init_drivers()
 
-        self.type = device['type']
         self.name = name
         self.link_uri = device['radio']
         self.cf = Crazyflie(rw_cache='./cache')
