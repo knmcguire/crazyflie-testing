@@ -18,7 +18,6 @@ class BCDevice:
     def __init__(self, name, device):
         cflib.crtp.init_drivers()
 
-        self.type = device['type']
         self.name = name
         self.link_uri = device['radio']
         self.cf = Crazyflie(rw_cache='./cache')
@@ -98,5 +97,6 @@ class Requirements(dict):
         return cls._instance
 
 
-def get_requirement(group: str, name: str):
+def get_requirement(requirement: str):
+    group, name = requirement.split('.')
     return Requirements.instance()['requirement'][group][name]

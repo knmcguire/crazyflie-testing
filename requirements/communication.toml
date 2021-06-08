@@ -1,4 +1,4 @@
-[group.radio]
+[requirement.radio]
 description = """Radio communication requirements.
 
 These requirements targets the low level radio communication.

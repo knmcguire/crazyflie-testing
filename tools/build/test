@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+[ -n "$CRAZY_SITE" ] || export CRAZY_SITE=single-cf
+
+pytest --verbose --junit-xml $CRAZY_SITE-$(date +%s).xml

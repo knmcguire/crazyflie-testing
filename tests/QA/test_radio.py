@@ -17,23 +17,23 @@ logger = logging.getLogger(__name__)
 @pytest.mark.parametrize('dev', conftest.get_devices(), ids=lambda d: d.name)
 class TestRadio:
     def test_latency_small_packets(self, dev):
-        requirement = conftest.get_requirement('radio', 'latencysmall')
+        requirement = conftest.get_requirement('radio.latencysmall')
         assert(latency(dev.link_uri, requirement['packet_size']) < requirement['limit_high_ms'])
 
     def test_latency_big_packets(self, dev):
-        requirement = conftest.get_requirement('radio', 'latencybig')
+        requirement = conftest.get_requirement('radio.latencybig')
         assert(latency(dev.link_uri, requirement['packet_size']) < requirement['limit_high_ms'])
 
     def test_bandwidth_small_packets(self, dev):
-        requirement = conftest.get_requirement('radio', 'bwsmall')
+        requirement = conftest.get_requirement('radio.bwsmall')
         assert(bandwidth(dev.link_uri, requirement['packet_size']) > requirement['limit_low'])
 
     def test_bandwidth_big_packets(self, dev):
-        requirement = conftest.get_requirement('radio', 'bwbig')
+        requirement = conftest.get_requirement('radio.bwbig')
         assert(bandwidth(dev.link_uri, requirement['packet_size']) > requirement['limit_low'])
 
     def test_reliability(self, dev):
-        requirement = conftest.get_requirement('radio', 'reliability')
+        requirement = conftest.get_requirement('radio.reliability')
         # The bandwidth function will assert if there is any packet loss
         bandwidth(dev.link_uri, 4, requirement['limit_low'])
 
