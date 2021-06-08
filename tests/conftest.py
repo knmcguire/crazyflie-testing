@@ -88,7 +88,14 @@ class Requirements(dict):
         requirements = glob.glob(REQUIREMENT + '*.toml')
         for requirement in requirements:
             req = toml.load(open(requirement))
-            cls._instance.update(req)
+            for key, value in req.items():
+                if type(value) == dict:
+                    if key not in cls._instance:
+                        cls._instance[key] = {}
+                    for subkey, subvalue in value.items():
+                        cls._instance[key][subkey] = subvalue
+                else:
+                    cls._instance[key] = value
 
     @classmethod
     def instance(cls):
