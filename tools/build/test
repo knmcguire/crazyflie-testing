@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+if [ -z ${CRAZY_SITE+x} ];
+then
+    export CRAZY_SITE=single-cf
+fi
+
+pytest --verbose
