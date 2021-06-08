@@ -97,5 +97,6 @@ class Requirements(dict):
         return cls._instance
 
 
-def get_requirement(group: str, name: str):
+def get_requirement(requirement: str):
+    group, name = requirement.split('.')
     return Requirements.instance()['requirement'][group][name]
