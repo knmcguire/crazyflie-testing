@@ -61,6 +61,7 @@ class BCDevice:
 
     def flash(self, path: str, progress_cb: Optional[Callable[[str, int], NoReturn]] = None) -> bool:
         self.bl.flash_full(cf=self.cf, filename=path, progress_cb=progress_cb, targets=[])
+        self.bl.close()
 
 
 def get_devices():
