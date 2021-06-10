@@ -1,0 +1,8 @@
+version = 1
+
+[device.E7E7E7E702]
+radio = "radio://0/50/2M/E7E7E7E702"
+decks = ["bcLighthouse4"]
+
+[device.E7E7E7E7E7]
+radio = "radio://0/80/2M/E7E7E7E7E7"
