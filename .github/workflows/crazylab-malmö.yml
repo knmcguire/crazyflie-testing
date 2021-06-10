@@ -12,4 +12,4 @@ jobs:
       - name: Check out sources
         uses: actions/checkout@v2
       - name: Run test suite
-        run: pytest --verbose --junit-xml $CRAZY_SITE-$(date +%s).xml
+        run: pytest --verbose -k test_radio --junit-xml $CRAZY_SITE-$(date +%s).xml
