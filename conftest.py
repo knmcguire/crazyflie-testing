@@ -3,6 +3,10 @@ import time
 import toml
 import glob
 
+from typing import Callable
+from typing import NoReturn
+from typing import Optional
+
 import cflib
 from cflib.bootloader import Bootloader
 from cflib.crazyflie import Crazyflie
@@ -10,8 +14,8 @@ from cflib.crtp.crtpstack import CRTPPacket
 from cflib.crtp.crtpstack import CRTPPort
 
 DIR = os.path.dirname(os.path.realpath(__file__))
-SITE_PATH = os.path.join(DIR, '../sites/')
-REQUIREMENT = os.path.join(DIR, '../requirements/')
+SITE_PATH = os.path.join(DIR, 'sites/')
+REQUIREMENT = os.path.join(DIR, 'requirements/')
 
 
 class BCDevice:
@@ -24,7 +28,7 @@ class BCDevice:
         self.bl = Bootloader(self.link_uri)
 
     def __str__(self):
-        return 'test'
+        return '{} @ {}'.format(self.name, self.link_uri)
 
     def firmware_up(self) -> bool:
         ''' Return true if we can contact the (stm32 based) firmware '''
@@ -54,6 +58,9 @@ class BCDevice:
 
         link.close()
         return False
+
+    def flash(self, path: str, progress_cb: Optional[Callable[[str, int], NoReturn]] = None) -> bool:
+        self.bl.flash_full(cf=self.cf, filename=path, progress_cb=progress_cb, targets=[])
 
 
 def get_devices():
