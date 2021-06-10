@@ -1,0 +1,15 @@
+name: Crazy Stab Lab 🗡️
+
+# Controls when the action will run.
+on:
+  workflow_dispatch
+jobs:
+  test:
+    runs-on: self-hosted
+    env:
+      CRAZY_SITE: crazylab-malmö
+    steps:
+      - name: Check out sources
+        uses: actions/checkout@v2
+      - name: Run test suite
+        run: pytest --verbose --junit-xml $CRAZY_SITE-$(date +%s).xml
