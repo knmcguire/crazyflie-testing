@@ -4,7 +4,7 @@ name: Crazy Stab Lab 🗡️
 on:
   workflow_dispatch
 jobs:
-  test:
+  testsuite_at_crazylab:
     runs-on: self-hosted
     env:
       CRAZY_SITE: crazylab-malmö
