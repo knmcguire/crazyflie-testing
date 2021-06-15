@@ -6,9 +6,14 @@ on:
 jobs:
   testsuite_at_crazylab:
     runs-on: self-hosted
+    container: python
     env:
       CRAZY_SITE: crazylab-malmö
     steps:
+      - name: Install pytest
+        run: pip3 install pytest
+      - name: Install Crazyflie python library
+        run: pip3 install git+https://github.com/bitcraze/crazyflie-lib-python.git@master
       - name: Check out sources
         uses: actions/checkout@v2
       - name: Run test suite
