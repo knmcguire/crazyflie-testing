@@ -6,7 +6,9 @@ on:
 jobs:
   testsuite_at_crazylab:
     runs-on: self-hosted
-    container: python
+    container:
+      image: python
+      options: --privileged -v /dev/bus/usb:/dev/bus/usb
     env:
       CRAZY_SITE: crazylab-malmö
     steps:
