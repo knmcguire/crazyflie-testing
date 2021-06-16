@@ -2,7 +2,10 @@ name: Crazy Stab Lab 🗡️
 
 # Controls when the action will run.
 on:
-  workflow_dispatch
+  workflow_dispatch:
+  schedule:
+  - cron:  '0 2 * * *'
+
 jobs:
   testsuite_at_crazylab:
     runs-on: self-hosted
