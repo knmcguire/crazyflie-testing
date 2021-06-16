@@ -1,8 +1,8 @@
 version = 1
 
-[device.E7E7E7E702]
-radio = "radio://0/50/2M/E7E7E7E702"
+[device.cf2_lighthouse]
+radio = "radio://0/50/2M/E7E7E71702"
 decks = ["bcLighthouse4"]
 
-[device.E7E7E7E7E7]
-radio = "radio://0/80/2M/E7E7E7E7E7"
+[device.cf2_stock]
+radio = "radio://0/50/2M/E7E7E71701"
