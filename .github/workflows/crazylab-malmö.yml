@@ -16,16 +16,24 @@ jobs:
         run: |
           apt update
           apt install libusb-1.0-0
+      
       - name: Install pytest
         run: pip3 install pytest
+      
       - name: Install Crazyflie python library
         run: pip3 install git+https://github.com/bitcraze/crazyflie-lib-python.git@master
+      
       - name: Check out sources
         uses: actions/checkout@v2
+      
       - name: Download latest firmware files
         with:
           repo: bitcraze/crazyflie-release
           workflow: nightly.yml
         uses: dawidd6/action-download-artifact@v2.14.0
+
+      - name: Upgrde devices to latest firmware
+        run: python3 management/program.py --file nightly/firmware-cf2-nightly.zip
+      
       - name: Run test suite
         run: pytest --verbose --junit-xml $CRAZY_SITE-$(date +%s).xml
