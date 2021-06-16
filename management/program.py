@@ -37,7 +37,7 @@ def program(fw_file: Path) -> bool:
             print('Programming failed: {}'.format(str(err)), file=sys.stderr)
             return False
 
-        return True
+    return True
 
 
 if __name__ == "__main__":
