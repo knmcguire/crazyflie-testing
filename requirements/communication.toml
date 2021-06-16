@@ -20,13 +20,13 @@ limit_high_ms = 8
 description = "Packet rate (packets per seconds) for small radio packets (4 bytes)"
 rational = "Empirical"
 packet_size = 4
-limit_low = 750
+limit_low = 650
 
 [requirement.radio.bwbig]
 description = "Packet rate (packets per seconds) for big radio packet (28 bytes)"
 rational = "Empirical"
 packet_size = 28
-limit_low = 400
+limit_low = 350
 
 [requirement.radio.reliability]
 description = "Packet exchange without any information loss"
