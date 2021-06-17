@@ -9,7 +9,7 @@ from typing import NoReturn
 from typing import Optional
 
 import cflib
-from cflib.bootloader import Bootloader
+from cflib.bootloader import Bootloader, Cloader
 from cflib.crazyflie import Crazyflie
 from cflib.crtp.crtpstack import CRTPPacket
 from cflib.crtp.crtpstack import CRTPPort
@@ -67,6 +67,20 @@ class BCDevice:
 
         link.close()
         return False
+
+    def recover(self):
+        if self.bl_link_uri is None:
+            return False
+
+        cloader = Cloader(None)
+        cloader.link = cflib.crtp.get_link_driver(self.bl_link_uri)
+        if cloader.link is None:
+            return False
+
+        status = cloader.reset_to_firmware(0xFE)  # nrf target_id
+        cloader.link.close()
+
+        return status
 
     def flash(self, path: str, progress_cb: Optional[Callable[[str, int], NoReturn]] = None) -> bool:
         try:
