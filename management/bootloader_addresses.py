@@ -58,15 +58,15 @@ def get_bl_address(dev: BCDevice) -> str:
     return address
 
 
-def list_addresses() -> bool:
+def list_addresses():
     for dev in get_devices():
         address = get_bl_address(dev)
         if address is None:
-            return False
+            print(f'{dev.name}: failed to get bootloader address')
+            continue
 
         print(f'{dev.name}: radio://0/0/2M/{address}?safelink=0')
 
 
 if __name__ == "__main__":
-    if not list_addresses():
-        sys.exit(1)
+    list_addresses()
