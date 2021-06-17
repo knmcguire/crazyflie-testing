@@ -4,6 +4,7 @@ import argparse
 import logging
 import os
 import sys
+import traceback
 
 #
 # This is to make it possible to import from conftest
@@ -35,6 +36,7 @@ def program(fw_file: Path) -> bool:
             dev.flash(fw_file, progress_cb)
         except Exception as err:
             print('Programming failed: {}'.format(str(err)), file=sys.stderr)
+            traceback.print_exc()
             return False
 
     return True
