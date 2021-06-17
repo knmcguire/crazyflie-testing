@@ -1,12 +1,9 @@
 from pathlib import Path
 
 import argparse
-import cflib
 import logging
 import os
 import sys
-
-from cflib.bootloader.cloader import Cloader
 
 #
 # This is to make it possible to import from conftest
@@ -20,22 +17,10 @@ from conftest import BCDevice, get_devices  # noqa
 logger = logging.getLogger(__name__)
 
 
-def _recover_dev(dev: BCDevice) -> bool:
-    cloader = Cloader(None)
-    cloader.link = cflib.crtp.get_link_driver(dev.bl_link_uri)
-    if cloader.link is None:
-        return False
-
-    status = cloader.reset_to_firmware(0xFE)
-    cloader.link.close()
-
-    return status
-
-
 def recover(name: str):
     for dev in get_devices():
         if not name or (name and dev.name == name):
-            if not _recover_dev(dev):
+            if not dev.recover():
                 print(f'Failed to recover {dev.name}', file=sys.stderr)
             else:
                 print(f'Recovered {dev.name} from bootloader mode')
