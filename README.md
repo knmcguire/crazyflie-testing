@@ -30,4 +30,6 @@ in your site.
 ```
 management/program.py               - Flash a firmware file to devices in site
 management/bootloader_addresses.py  - List all devices bootloader addresses
+management/recover.py               - Attempt to recover one or all device(s)
+                                      from bootloader mode
 ```
