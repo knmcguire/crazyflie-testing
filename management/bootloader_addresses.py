@@ -19,8 +19,6 @@ from conftest import BCDevice, get_devices  # noqa
 
 logger = logging.getLogger(__name__)
 
-current_frame = 0
-
 
 def get_bl_address(dev: BCDevice) -> str:
     '''
