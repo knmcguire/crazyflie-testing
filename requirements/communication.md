@@ -12,13 +12,14 @@ Contents
 	* [bwbig](#bwbig)
 	* [reliability](#reliability)
 
+
+<!-- This file is auto-generated from: communication.toml -->
+
+
 # Radio
 
 
-Radio communication requirements.
-
 These requirements targets the low level radio communication.
-
 ## latencysmall
 
 
