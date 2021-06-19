@@ -65,6 +65,8 @@ def render_requirement(name: str, requirement: dict) -> bool:
     ''' Render a requiremennt file, read to a dict '''
     md = MdUtils(file_name=str(Path(name).with_suffix('')))
 
+    md.write(f'\n\n<!-- This file is auto-generated from: {Path(name).name} -->\n\n')
+
     result = render_md(None, requirement['requirement'], md, level=1)
     if result:
         md.new_table_of_contents(table_title='Contents', depth=4)
