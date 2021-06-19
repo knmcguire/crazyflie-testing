@@ -10,13 +10,14 @@ Contents
 	* [reset_to_firmware](#reset_to_firmware)
 	* [reliability](#reliability)
 
+
+<!-- This file is auto-generated from: bootloaders.toml -->
+
+
 # Bootloaders
 
 
-Bootloader(s) requirement
-
 These requirements targets the functionality of the Crazyflie bootloaders.
-
 ## reset_to_bootloader
 
 
