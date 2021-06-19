@@ -1,8 +1,5 @@
 [requirement.radio]
-description = """Radio communication requirements.
-
-These requirements targets the low level radio communication.
-"""
+description = "These requirements targets the low level radio communication."
 
 [requirement.radio.latencysmall]
 description = "Link round-trip latency for small radio packets (4 bytes)"
