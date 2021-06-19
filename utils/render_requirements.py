@@ -86,6 +86,28 @@ def render():
             print(f'Failed to load requirement TOML file: {err}')
             traceback.print_exc()
 
+    readme = MdUtils(
+        file_name=os.path.join(REQUIREMENT, 'README.md'),
+        title='Requirements'
+    )
+
+    readme.write('\n<!-- This file is auto-generated! -->\n')
+
+    readme.new_paragraph(('The requirements represents what we can test '
+                          'about or products and devices. They are added to '
+                          'TOML files in this directory. The TOML files are '
+                          'parsed from the test framework and used as input '
+                          'to the tests. They are also rendered to markdown '
+                          'using `utils/render_requirements.py`.\n\n'
+                          'Below is a list of the current groups:\n'))
+
+    # Linkify the requirements
+    readme.new_list([
+                        '[{0}]({0})'.format(Path(req).with_suffix('.md').name)
+                        for req in requirements
+                    ])
+    readme.create_md_file()
+
 
 if __name__ == "__main__":
     render()
