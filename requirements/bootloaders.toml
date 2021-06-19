@@ -1,8 +1,5 @@
 [requirement.bootloaders]
-description = """Bootloader(s) requirement
-
-These requirements targets the functionality of the Crazyflie bootloaders.
-"""
+description = "These requirements targets the functionality of the Crazyflie bootloaders."
 
 [requirement.bootloaders.reset_to_bootloader]
 description = """
