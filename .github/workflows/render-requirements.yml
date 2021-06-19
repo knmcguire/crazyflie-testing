@@ -1,0 +1,34 @@
+name: Render Requirements
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  render_requirements:
+  runs-on: ubuntu-latest
+
+steps:
+    - name: Checkout repo content
+      uses: actions/checkout@v2 # checkout the repository content to github runner.
+
+    - name: Setup python
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.8 #install the python needed
+
+    - name: Render requirements
+    - run: python utils/render_requirements.py
+
+    - name: Commit and push changes
+    - run: |
+        git config --local user.email "ci@bitcraze.io"
+        git config --local user.name "Bitcraze CI Robot"
+        git add requirements/*.md
+        git commit -m "requirements: render markdown" || echo "No changes"
+    - name: Push changes # push the output folder to your repo
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ github.ref }}
