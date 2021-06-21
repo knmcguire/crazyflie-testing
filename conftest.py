@@ -20,6 +20,8 @@ REQUIREMENT = os.path.join(DIR, 'requirements/')
 
 
 class BCDevice:
+    CONNECT_TIMEOUT = 10  # seconds
+
     def __init__(self, name, device):
         cflib.crtp.init_drivers()
 
@@ -67,6 +69,24 @@ class BCDevice:
             raise e
         finally:
             self.bl.close()
+
+    def connect_sync(self, querystring=None):
+        self.cf.close_link()
+
+        if querystring is None:
+            uri = self.link_uri
+        else:
+            uri = self.link_uri + querystring
+
+        self.cf.open_link(uri)
+
+        ts = time.time()
+        while not self.cf.is_connected():
+            time.sleep(1.0 / 1000.0)
+            delta = time.time() - ts
+            if delta > self.CONNECT_TIMEOUT:
+                return False
+        return True
 
 
 class DeviceFixture:
