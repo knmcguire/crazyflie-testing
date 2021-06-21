@@ -1,3 +1,4 @@
+import pytest
 import os
 import time
 import toml
@@ -66,6 +67,23 @@ class BCDevice:
             raise e
         finally:
             self.bl.close()
+
+
+class DeviceFixture:
+    def __init__(self, dev: BCDevice):
+        self._device = dev
+
+    @property
+    def device(self):
+        return self._device
+
+
+@pytest.fixture
+def test_setup(request):
+    ''' This code will run before (and after) a test '''
+    fix = DeviceFixture(request.param)
+    yield fix  # code after this point will run as teardown after test
+    fix.device.cf.close_link()
 
 
 def get_devices():
