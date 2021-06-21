@@ -27,6 +27,11 @@ class BCDevice:
 
         self.name = name
         self.link_uri = device['radio']
+        self.decks = []
+
+        if 'decks' in device:
+            self.decks = device['decks']
+
         self.cf = Crazyflie(rw_cache='./cache')
         self.bl = Bootloader(self.link_uri)
 
@@ -94,8 +99,16 @@ class DeviceFixture:
         self._device = dev
 
     @property
-    def device(self):
+    def device(self) -> BCDevice:
         return self._device
+
+    @property
+    def kalman_active(self) -> bool:
+        kalman_decks = ['bcLighthouse4', 'bcFlow', 'bcFlow2', 'bcDWM1000']
+        if self._device.decks:
+            return all(deck in kalman_decks for deck in self._device.decks)
+        else:
+            return False
 
 
 @pytest.fixture
