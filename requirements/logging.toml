@@ -18,7 +18,7 @@ max = 128
 [requirement.logging.blocks]
 description = """
 It should not be possible to add more than 16 log blocks to a log config. And
-at most 26 bytes per block."
+at most 26 bytes per block.
 """
 rational = "Design"
 max = 16
