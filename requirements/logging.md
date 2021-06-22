@@ -44,7 +44,7 @@ It should not be possible to add more than 128 variables to a log config.
 
 
 It should not be possible to add more than 16 log blocks to a log config. And
-at most 26 bytes per block."
+at most 26 bytes per block.
 
 |Field|Value|
 | :--- | :--- |
