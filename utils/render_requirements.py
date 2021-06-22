@@ -104,7 +104,7 @@ def render():
     # Linkify the requirements
     readme.new_list([
                         '[{0}]({0})'.format(Path(req).with_suffix('.md').name)
-                        for req in requirements
+                        for req in sorted(requirements)
                     ])
     readme.create_md_file()
 
