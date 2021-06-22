@@ -1,0 +1,34 @@
+[requirement.logging]
+description = "These requirements targets the Crazyflie logging framework."
+
+[requirement.logging.basic]
+description = """
+It must be able to receive logging variable values in both a synchronous and
+asynchronous manner. It must also be possible to set a desired rate of how
+often one receives updates of the logging variable.
+"""
+rational = "Design"
+max_rate = 100  # Hz
+
+[requirement.logging.variables]
+description = "It should not be possible to add more than 128 variables to a log config"
+rational = "Design"
+max = 128
+
+[requirement.logging.blocks]
+description = "It should not be possible to add more than 128 variables to a log config"
+rational = "Design"
+max = 16
+max_payload = 26
+
+[requirement.logging.rate]
+description = """
+Packet rate (packets per seconds) with full payloaded log blocks. And when no
+heavy task (like kalman) is running.
+"""
+rational = "Empirical"
+background = """
+This is what a Raspberry Pi 4 running a 64-bit distro manages through Docker.
+Which can be viewed as our lowest supported system.
+"""
+limit_low = 300

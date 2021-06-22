@@ -1,3 +1,4 @@
+import pytest
 import os
 import time
 import toml
@@ -19,11 +20,18 @@ REQUIREMENT = os.path.join(DIR, 'requirements/')
 
 
 class BCDevice:
+    CONNECT_TIMEOUT = 10  # seconds
+
     def __init__(self, name, device):
         cflib.crtp.init_drivers()
 
         self.name = name
         self.link_uri = device['radio']
+        self.decks = []
+
+        if 'decks' in device:
+            self.decks = device['decks']
+
         self.cf = Crazyflie(rw_cache='./cache')
         self.bl = Bootloader(self.link_uri)
 
@@ -66,6 +74,49 @@ class BCDevice:
             raise e
         finally:
             self.bl.close()
+
+    def connect_sync(self, querystring=None):
+        self.cf.close_link()
+
+        if querystring is None:
+            uri = self.link_uri
+        else:
+            uri = self.link_uri + querystring
+
+        self.cf.open_link(uri)
+
+        ts = time.time()
+        while not self.cf.is_connected():
+            time.sleep(1.0 / 1000.0)
+            delta = time.time() - ts
+            if delta > self.CONNECT_TIMEOUT:
+                return False
+        return True
+
+
+class DeviceFixture:
+    def __init__(self, dev: BCDevice):
+        self._device = dev
+
+    @property
+    def device(self) -> BCDevice:
+        return self._device
+
+    @property
+    def kalman_active(self) -> bool:
+        kalman_decks = ['bcLighthouse4', 'bcFlow', 'bcFlow2', 'bcDWM1000']
+        if self._device.decks:
+            return all(deck in kalman_decks for deck in self._device.decks)
+        else:
+            return False
+
+
+@pytest.fixture
+def test_setup(request):
+    ''' This code will run before (and after) a test '''
+    fix = DeviceFixture(request.param)
+    yield fix  # code after this point will run as teardown after test
+    fix.device.cf.close_link()
 
 
 def get_devices():
