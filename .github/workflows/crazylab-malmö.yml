@@ -39,4 +39,10 @@ jobs:
         run: python3 management/program.py --file nightly/firmware-cf2-nightly.zip
       
       - name: Run test suite
-        run: pytest --verbose --junit-xml $CRAZY_SITE-$(date +%s).xml
+        run: pytest --verbose --junit-xml ${{ env.CRAZY_SITE }}.xml
+
+      - name: Publish Unit Test Results
+        uses: EnricoMi/publish-unit-test-result-action/composite@v1
+        if: always()
+        with:
+          files: ${{ env.CRAZY_SITE }}.xml
