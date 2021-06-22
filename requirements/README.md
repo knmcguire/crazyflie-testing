@@ -9,6 +9,6 @@ The requirements represents what we can test about or products and devices. They
 
 Below is a list of the current groups:
 
-- [communication.md](communication.md)
 - [bootloaders.md](bootloaders.md)
+- [communication.md](communication.md)
 - [logging.md](logging.md)

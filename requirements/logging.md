@@ -22,7 +22,7 @@ These requirements targets the Crazyflie logging framework.
 ## basic
 
 
-It must be able to receive logging variable values in both a synchronous and
+It must be possible to receive logging variable values in both a synchronous and
 asynchronous manner. It must also be possible to set a desired rate of how
 often one receives updates of the logging variable.
 
@@ -34,7 +34,7 @@ often one receives updates of the logging variable.
 ## variables
 
 
-It should not be possible to add more than 128 variables to a log config
+It should not be possible to add more than 128 variables to a log config.
 |Field|Value|
 | :--- | :--- |
 |max|128|
@@ -43,7 +43,9 @@ It should not be possible to add more than 128 variables to a log config
 ## blocks
 
 
-It should not be possible to add more than 128 variables to a log config
+It should not be possible to add more than 16 log blocks to a log config. And
+at most 26 bytes per block."
+
 |Field|Value|
 | :--- | :--- |
 |max|16|
