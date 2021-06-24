@@ -40,3 +40,13 @@ jobs:
       
       - name: Run test suite
         run: pytest --verbose --junit-xml $CRAZY_SITE-$(date +%s).xml
+
+      - name: Checkout Crazyflie python library
+        uses: actions/checkout@v2
+        with:
+          repository: bitcraze/crazyflie-lib-python
+          path: crazyflie-lib-python
+
+      - name: Run Crazyflie python library examples
+        run: |
+          python3 -u utils/run_examples.py --path crazyflie-lib-python
