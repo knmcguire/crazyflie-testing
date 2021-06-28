@@ -11,4 +11,5 @@ Below is a list of the current groups:
 
 - [bootloaders.md](bootloaders.md)
 - [communication.md](communication.md)
+- [decks.md](decks.md)
 - [logging.md](logging.md)
