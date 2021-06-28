@@ -1,11 +1,16 @@
 version = 1
 
-[device.cf2_Flow2]
+[device.cf2_flow2_lighthouse]
+radio = "radio://0/50/2M/E7E7E71706"
+decks = ["bcFlow2", "bcLighthouse4"]
+bootloader_radio = "radio://0/0/2M/B19CF77F05?safelink=0"
+
+[device.cf2_flow2]
 radio = "radio://0/50/2M/E7E7E71705"
 decks = ["bcFlow2"]
-bootloader_radio = "radio://0/0/2M/B1AE29A69D?safelink=0"
+bootloader_radio = "radio://0/0/2M/B16298A8A3?safelink=0"
 
-[device.cf2_MultirangerFlow2]
+[device.cf2_flow2_multiranger]
 radio = "radio://0/50/2M/E7E7E71704"
 decks = ["bcFlow2", "bcMultiranger"]
 bootloader_radio = "radio://0/0/2M/B1CEE678C5?safelink=0"
