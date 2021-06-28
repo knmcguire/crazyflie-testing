@@ -48,7 +48,7 @@ class TestDecks:
             cb=deck_param_callback
         )
 
-        time.sleep(1)
+        time.sleep(3)
 
         for deck in test_setup.device.decks:
             assert deck in discovered
