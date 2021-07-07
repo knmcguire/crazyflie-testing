@@ -1,10 +1,14 @@
 import pytest
+import binascii
 import os
 import time
 import toml
 import glob
+import struct
+import sys
 
 from typing import Callable
+from typing import List
 from typing import NoReturn
 from typing import Optional
 
@@ -134,7 +138,43 @@ def test_setup(request):
     fix.device.cf.close_link()
 
 
-def get_devices():
+def get_bl_address(dev: BCDevice) -> str:
+    '''
+    Send the BOOTLOADER_CMD_RESET_INIT command to the NRF firmware
+    and receive the bootloader radio address in the response
+    '''
+    address = None
+    link = cflib.crtp.get_link_driver(dev.link_uri)
+    if link is None:
+        return None
+
+    # 0xFF => BOOTLOADER CMD
+    # 0xFE => To the NRF firmware
+    # 0xFF => BOOTLOADER_CMD_RESET_INIT (to get bl address)
+    pk = CRTPPacket(0xFF, [0xFE, 0xFF])
+    link.send_packet(pk)
+
+    timeout = 5  # seconds
+    ts = time.time()
+    while time.time() - ts < timeout:
+        pk = link.receive_packet(2)
+        if pk is None:
+            continue
+
+        # Header 0xFF means port is 0xF ((header & 0xF0) >> 4)) and channel
+        # is 0x3 (header & 0x03).
+        if pk.port == 0xF and pk.channel == 0x3 and len(pk.data) > 3:
+            # 0xFE is NRF target id, 0xFF is BOOTLOADER_CMD_RESET_INIT
+            if struct.unpack('<BB', pk.data[0:2]) != (0xFE, 0xFF):
+                continue
+            address = 'B1' + binascii.hexlify(pk.data[2:6][::-1]).upper().decode('utf8')  # noqa
+            break
+
+    link.close()
+    return address
+
+
+def get_devices() -> List[BCDevice]:
     devices = list()
 
     site = os.getenv('CRAZY_SITE')
@@ -150,6 +190,59 @@ def get_devices():
             devices.append(BCDevice(name, device))
     except Exception:
         raise Exception('Failed to parse toml %s!' % path)
+
+    return devices
+
+
+def get_swarm() -> List[BCDevice]:
+    '''
+    Given a path to the Crazyswarm project source and path in the
+    CRAZYSWARM_PATH environment variable and a path to a YAML file defining
+    a swarm in CRAZYSWARM_YAML return a list of BCDevice.
+    '''
+    devices = list()
+
+    try:
+        crazyswarm_path = os.environ['CRAZYSWARM_PATH']
+        sys.path.append(os.path.join(
+            crazyswarm_path,
+            'ros_ws/src/crazyswarm/scripts'
+        ))
+        sys.path.append(os.path.join(
+            crazyswarm_path,
+            'ros_ws/src/crazyflie_ros'
+        ))
+        from pycrazyswarm import Crazyswarm
+
+        crazyflies_yaml = os.path.join(
+            os.path.dirname(os.path.realpath(__file__)),
+            'swarms',
+            os.environ['CRAZYSWARM_YAML']
+        )
+        cs = Crazyswarm(crazyflies_yaml=crazyflies_yaml)
+
+        for cf in cs.allcfs.crazyflies:
+            address = 'E7E7E7E7{:X}'.format(cf.id)
+
+            # get URI from address using scan
+            found = cflib.crtp.scan_interfaces(int(address, 16))
+            if not found:
+                raise Exception(f'No device found @ {address}!')
+
+            dev = BCDevice(
+                name=f'swarm-{cf.id}',
+                device={
+                    'radio': found[0][0],
+                    'bootloader_radio': None,
+                }
+            )
+            devices.append(dev)
+    except KeyError as err:
+        print('CRAZYSWARM_PATH or CRAZYSWARM_YAML not set', file=sys.stderr)
+        raise err
+    except ImportError as err:
+        print('Failed to import pycrazyswarm', file=sys.stderr)
+        raise err
 
     return devices
 
