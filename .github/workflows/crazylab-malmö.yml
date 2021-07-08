@@ -39,7 +39,7 @@ jobs:
         run: python3 management/program.py --file nightly/firmware-cf2-nightly.zip
       
       - name: Run test suite
-        run: pytest --verbose --junit-xml $CRAZY_SITE-$(date +%s).xml
+        run: pytest --verbose --junit-xml $CRAZY_SITE-$(date +%s).xml tests/QA
 
       - name: Checkout Crazyflie python library
         uses: actions/checkout@v2

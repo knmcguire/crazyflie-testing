@@ -14,6 +14,14 @@
 import logging
 import os
 import sys
+import traceback
+
+from pathlib import Path
+
+import cflib.crtp
+
+# Initiate the low level drivers
+cflib.crtp.init_drivers()
 
 #
 # This is to make it possible to import from conftest
@@ -22,20 +30,35 @@ currentdir = os.path.dirname(os.path.realpath(__file__))
 parentdir = os.path.join(currentdir, '..')
 sys.path.append(parentdir)
 
-from conftest import BCDevice, get_devices, get_bl_address  # noqa
+from conftest import get_swarm  # noqa
 
 logger = logging.getLogger(__name__)
 
+current_frame = 0
 
-def list_addresses():
-    for dev in get_devices():
-        address = get_bl_address(dev)
-        if address is None:
-            print(f'{dev.name}: failed to get bootloader address')
-            continue
 
-        print(f'{dev.name}: radio://0/0/2M/{address}?safelink=0')
+def progress_cb(msg: str, percent: int):
+    global current_frame
+    frames = ['◢', '◣', '◤', '◥']
+    frame = frames[current_frame % 4]
+
+    print('{} {}% {}'.format(frame, percent, msg), end='\r')
+    current_frame += 1
+
+
+def program_swarm(fw_file: Path) -> bool:
+    for dev in get_swarm():
+        try:
+            print('Programming device: {}'.format(dev))
+            dev.flash(fw_file, progress_cb)
+        except Exception as err:
+            print('Programming failed: {}'.format(str(err)), file=sys.stderr)
+            traceback.print_exc()
+            return False
+
+    return True
 
 
 if __name__ == "__main__":
-    list_addresses()
+    if not program_swarm(sys.argv[1]):
+        sys.exit(1)
