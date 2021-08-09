@@ -29,8 +29,6 @@ class TestDecks:
         Check that all decks defined in for the device in the site
         is detected, using the parameter interface.
         '''
-        pytest.skip('Skipping deck presence test')
-
         if not test_setup.device.decks:
             pytest.skip('no decks on device')
 
