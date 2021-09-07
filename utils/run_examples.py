@@ -30,12 +30,12 @@ def run(path: str):
 
 def run_examples(path: Path):
     examples = [
-        'basiclog.py',
-        'basiclogSync.py',
-        'basicparam.py',
-        'read_deck_mem.py',
-        'read-eeprom.py',
-        'read-ow.py',
+        'logging/basiclog.py',
+        'logging/basiclogSync.py',
+        'parameters/basicparam.py',
+        'memory/read_deck_mem.py',
+        'memory/read-eeprom.py',
+        'memory/read-ow.py',
         'step-by-step/sbs_connect_log_param.py'
     ]
     success = True
