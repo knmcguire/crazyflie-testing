@@ -42,6 +42,40 @@ class TestParameters:
             with pytest.raises(AttributeError):
                 scf.cf.param.set_value(param, 1)
 
+    def test_param_set_raw(self, test_setup):
+        param = 'ring.effect'
+        value = 13  # Gravity effect
+        updated = False
+
+        def param_raw_cb(name: str, val: str):
+            nonlocal param
+            nonlocal value
+            nonlocal updated
+
+            assert name == param
+            assert value == int(val)
+            updated = True
+
+        with SyncCrazyflie(test_setup.device.link_uri) as scf:
+            # Work-around to make sure parameter values are updated
+            # will not be needed when we land code to do this automatic
+            time.sleep(3)
+
+            [group, name] = param.split('.')
+            scf.cf.param.add_update_callback(
+                group=group,
+                name=name,
+                cb=param_raw_cb
+            )
+
+            # 0x08 = UINT_8,
+            scf.cf.param.set_value_raw(param, 0x08, value)
+            scf.cf.param.request_param_update(param)
+
+            timeout = 1  # seconds
+            time.sleep(timeout)
+            assert updated
+
     def test_param_set(self, test_setup):
         param = 'stabilizer.estimator'
 
