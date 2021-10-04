@@ -57,10 +57,6 @@ class TestParameters:
             updated = True
 
         with SyncCrazyflie(test_setup.device.link_uri) as scf:
-            # Work-around to make sure parameter values are updated
-            # will not be needed when we land code to do this automatic
-            time.sleep(3)
-
             [group, name] = param.split('.')
             scf.cf.param.add_update_callback(
                 group=group,
@@ -88,10 +84,6 @@ class TestParameters:
 
         with SyncCrazyflie(test_setup.device.link_uri) as scf:
             [group, name] = param.split('.')
-
-            # Work-around to make sure parameter values are updated
-            # will not be needed when we land code to do this automatic
-            time.sleep(3)
 
             initial = scf.cf.param.get_value(param)
             assert initial is not None
