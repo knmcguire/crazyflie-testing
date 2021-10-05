@@ -58,14 +58,16 @@ class TestParameters:
 
         with SyncCrazyflie(test_setup.device.link_uri) as scf:
             [group, name] = param.split('.')
+
+            # 0x08 = UINT_8,
+            scf.cf.param.set_value_raw(param, 0x08, value, wait=True)
+
             scf.cf.param.add_update_callback(
                 group=group,
                 name=name,
                 cb=param_raw_cb
             )
 
-            # 0x08 = UINT_8,
-            scf.cf.param.set_value_raw(param, 0x08, value, wait=True)
             scf.cf.param.request_param_update(param)
 
             timeout = 1  # seconds
