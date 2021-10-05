@@ -65,7 +65,7 @@ class TestParameters:
             )
 
             # 0x08 = UINT_8,
-            scf.cf.param.set_value_raw(param, 0x08, value)
+            scf.cf.param.set_value_raw(param, 0x08, value, wait=True)
             scf.cf.param.request_param_update(param)
 
             timeout = 1  # seconds
