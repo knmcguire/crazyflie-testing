@@ -18,10 +18,14 @@ jobs:
       - name: Install libusb
         run: |
           apt update
-          apt install libusb-1.0-0
+          apt install -y libusb-1.0-0
       
       - name: Install pytest
         run: pip3 install pytest
+
+      - name: Upgrade pip
+        run:  |
+          pip3 install --upgrade pip
       
       - name: Install Crazyflie python library
         run: pip3 install git+https://github.com/bitcraze/crazyflie-lib-python.git@master
