@@ -10,7 +10,7 @@ jobs:
   testsuite_at_crazylab:
     runs-on: self-hosted
     container:
-      image: python
+      image: python:3.9.7-buster
       options: --privileged
     env:
       CRAZY_SITE: crazylab-malmö
