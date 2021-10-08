@@ -65,15 +65,15 @@ jobs:
       - name: Install Crazyflie python library
         run: pip3 install git+https://github.com/bitcraze/crazyflie-lib-python.git@master
 
-      - name: Upgrade swarm to latest firmware
-        run: |
-          source crazyswarm/ros_ws/devel/setup.bash
-          python3 management/program_swarm.py nightly/firmware-tag-nightly.zip --sim
-        shell: bash
+      # - name: Upgrade swarm to latest firmware
+      #   run: |
+      #     source crazyswarm/ros_ws/devel/setup.bash
+      #     python3 management/program_swarm.py nightly/firmware-tag-nightly.zip --sim
+      #   shell: bash
 
-      - name: Run Crazyswarm tests
-        run: |
-          source crazyswarm/ros_ws/devel/setup.bash
-          roslaunch swarms/crazylab-malmö.launch &
-          python3 -m pytest --verbose tests/crazyswarm
-        shell: bash
+      # - name: Run Crazyswarm tests
+      #   run: |
+      #     source crazyswarm/ros_ws/devel/setup.bash
+      #     roslaunch swarms/crazylab-malmö.launch &
+      #     python3 -m pytest --verbose tests/crazyswarm
+      #   shell: bash
