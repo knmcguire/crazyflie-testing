@@ -194,7 +194,7 @@ def get_devices() -> List[BCDevice]:
     return devices
 
 
-def get_swarm() -> List[BCDevice]:
+def get_crazyswarm() -> List[BCDevice]:
     '''
     Given a path to the Crazyswarm project source and path in the
     CRAZYSWARM_PATH environment variable and a path to a YAML file defining

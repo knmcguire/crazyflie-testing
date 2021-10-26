@@ -30,7 +30,7 @@ currentdir = os.path.dirname(os.path.realpath(__file__))
 parentdir = os.path.join(currentdir, '..')
 sys.path.append(parentdir)
 
-from conftest import get_swarm  # noqa
+from conftest import get_crazyswarm  # noqa
 
 logger = logging.getLogger(__name__)
 
@@ -47,7 +47,7 @@ def progress_cb(msg: str, percent: int):
 
 
 def program_swarm(fw_file: Path) -> bool:
-    for dev in get_swarm():
+    for dev in get_crazyswarm():
         try:
             print('Programming device: {}'.format(dev))
             dev.flash(fw_file, progress_cb)

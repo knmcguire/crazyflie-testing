@@ -68,7 +68,7 @@ jobs:
       # - name: Upgrade swarm to latest firmware
       #   run: |
       #     source crazyswarm/ros_ws/devel/setup.bash
-      #     python3 management/program_swarm.py nightly/firmware-tag-nightly.zip --sim
+      #     python3 management/program_crazyswarm.py nightly/firmware-tag-nightly.zip --sim
       #   shell: bash
 
       # - name: Run Crazyswarm tests

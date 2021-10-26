@@ -32,7 +32,7 @@ management/program.py               - Flash a firmware file to devices in site
 management/bootloader_addresses.py  - List all devices bootloader addresses
 management/recover.py               - Attempt to recover one or all device(s)
                                       from bootloader mode
-management/program_swarm.py         - Flash a firmware file to devices in a swarm
+management/program_crazyswarm.py    - Flash a firmware file to devices in a Crazyswarm swarm
 ```
 
 ## Testing with Crazyswarm
