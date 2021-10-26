@@ -15,6 +15,7 @@ from typing import Optional
 import cflib
 from cflib.bootloader import Bootloader, Cloader
 from cflib.crazyflie import Crazyflie
+from cflib.crazyflie.swarm import CachedCfFactory, Swarm
 from cflib.crtp.crtpstack import CRTPPacket
 from cflib.crtp.crtpstack import CRTPPort
 
@@ -192,6 +193,11 @@ def get_devices() -> List[BCDevice]:
         raise Exception('Failed to parse toml %s!' % path)
 
     return devices
+
+
+def get_swarm() -> Swarm:
+    factory = CachedCfFactory(rw_cache='./cache')
+    return Swarm([dev.link_uri for dev in get_devices()], factory=factory)
 
 
 def get_crazyswarm() -> List[BCDevice]:

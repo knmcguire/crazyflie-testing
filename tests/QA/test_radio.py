@@ -24,6 +24,8 @@ from cflib.crtp.crtpstack import CRTPPort
 import conftest
 import logging
 
+time_start = 0
+
 logger = logging.getLogger(__name__)
 
 
@@ -54,7 +56,7 @@ class TestRadio:
 def build_data(i, packet_size):
     assert(packet_size % 4 == 0)
     repeats = packet_size // 4
-    return struct.pack('<' + 'I'*repeats, *[i]*repeats)
+    return struct.pack('<' + 'I' * repeats, *[i] * repeats)
 
 
 def latency(uri, packet_size=4, count=500):
@@ -90,10 +92,14 @@ def latency(uri, packet_size=4, count=500):
         raise e
 
     link.close()
-    result = np.min(latencies)
-    logger.info('latency: {}'.format(result))
+    min = np.min(latencies)
+    mean = np.mean(latencies)
+    max = np.max(latencies)
 
-    return result
+    logger.info(f'{uri}: Done @ {time.time() - time_start}')
+    logger.info('latency: min {}, mean: {}, max: {}'.format(min, mean, max))
+
+    return min
 
 
 def bandwidth(uri, packet_size=4, count=500):
@@ -130,3 +136,25 @@ def bandwidth(uri, packet_size=4, count=500):
     logger.info('bandwidth: {}'.format(result))
 
     return result
+
+
+def test_radio_fairness():
+    global time_start
+
+    swarm = conftest.get_swarm()
+    record_bandwidth = dict()
+    record_latency = dict()
+
+    def bandwidth_fairness(scf):
+        nonlocal record_bandwidth
+        record_bandwidth[scf._link_uri] = bandwidth(scf._link_uri)
+
+    def latency_fairness(scf):
+        nonlocal record_latency
+        record_latency[scf._link_uri] = latency(scf._link_uri)
+
+    swarm.parallel_safe(bandwidth_fairness)
+
+    time_start = time.time()
+
+    swarm.parallel_safe(latency_fairness)
