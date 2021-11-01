@@ -32,7 +32,8 @@ class BCDevice:
 
         self.name = name
         self.link_uri = device['radio']
-        self.bl_link_uri = device['bootloader_radio']
+        if 'bootloader_radio' in device:
+            self.bl_link_uri = device['bootloader_radio']
         self.decks = []
 
         if 'decks' in device:
