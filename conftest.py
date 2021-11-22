@@ -13,7 +13,7 @@ from typing import NoReturn
 from typing import Optional
 
 import cflib
-from cflib.bootloader import Bootloader, Cloader
+from cflib.bootloader import Bootloader, Cloader, Target
 from cflib.crazyflie import Crazyflie
 from cflib.crtp.crtpstack import CRTPPacket
 from cflib.crtp.crtpstack import CRTPPort
@@ -88,7 +88,12 @@ class BCDevice:
 
     def flash(self, path: str, progress_cb: Optional[Callable[[str, int], NoReturn]] = None) -> bool:
         try:
-            self.bl.flash_full(cf=self.cf, filename=path, progress_cb=progress_cb, targets=[])
+            if path.name.endswith(".bin"):
+                targets=[Target('cf2', 'stm32', 'fw')]
+            else:
+                targets=[]
+
+            self.bl.flash_full(cf=self.cf, filename=path, progress_cb=progress_cb, targets=targets)
         except Exception as e:
             raise e
         finally:
