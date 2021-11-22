@@ -42,6 +42,23 @@ class TestParameters:
             with pytest.raises(AttributeError):
                 scf.cf.param.set_value(param, 1)
 
+    def test_param_extended_type(self, test_setup):
+        with SyncCrazyflie(test_setup.device.link_uri) as scf:
+            # Get a known persistent parameter
+            param = 'ring.effect'
+            element = scf.cf.param.toc.get_element_by_complete_name(param)
+            assert element is not None
+            assert element.is_extended()
+            assert element.is_persistent()
+
+            # And a known non-persistent parameter
+            param = 'stabilizer.stop'
+            element = scf.cf.param.toc.get_element_by_complete_name(param)
+            print(element.is_persistent)
+            assert element is not None
+            assert not element.is_extended()
+            assert not element.is_persistent()
+
     def test_param_set_raw(self, test_setup):
         param = 'ring.effect'
         value = 13  # Gravity effect
