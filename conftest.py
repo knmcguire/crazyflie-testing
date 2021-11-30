@@ -31,7 +31,12 @@ class BCDevice:
 
         self.name = name
         self.link_uri = device['radio']
-        self.bl_link_uri = device['bootloader_radio']
+        try:
+            self.bl_link_uri = device['bootloader_radio']
+        except KeyError:
+            self.bl_link_uri = None
+            pass
+
         self.decks = []
 
         if 'decks' in device:
@@ -89,9 +94,9 @@ class BCDevice:
     def flash(self, path: str, progress_cb: Optional[Callable[[str, int], NoReturn]] = None) -> bool:
         try:
             if path.name.endswith(".bin"):
-                targets=[Target('cf2', 'stm32', 'fw')]
+                targets = [Target('cf2', 'stm32', 'fw')]
             else:
-                targets=[]
+                targets = []
 
             self.bl.flash_full(cf=self.cf, filename=path, progress_cb=progress_cb, targets=targets)
         except Exception as e:
