@@ -17,6 +17,7 @@ from cflib.bootloader import Bootloader, Cloader, Target
 from cflib.crazyflie import Crazyflie
 from cflib.crtp.crtpstack import CRTPPacket
 from cflib.crtp.crtpstack import CRTPPort
+from cflib.utils.power_switch import PowerSwitch
 
 DIR = os.path.dirname(os.path.realpath(__file__))
 SITE_PATH = os.path.join(DIR, 'sites/')
@@ -76,6 +77,10 @@ class BCDevice:
 
         link.close()
         return False
+
+    def reboot(self):
+        switch = PowerSwitch(self.link_uri)
+        switch.stm_power_cycle()
 
     def recover(self):
         if self.bl_link_uri is None:
