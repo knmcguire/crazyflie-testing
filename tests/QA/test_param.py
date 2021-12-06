@@ -200,9 +200,10 @@ class TestParameters:
             assert value == int(val)
             updated = True
 
-        def all_updated_cb():
-            nonlocal param
-            nonlocal scf
+        with SyncCrazyflie(test_setup.device.link_uri) as scf:
+            [group, name] = param.split('.')
+
+            scf.wait_for_params()
 
             # 0x08 = UINT_8,
             scf.cf.param.add_update_callback(
@@ -212,10 +213,6 @@ class TestParameters:
             )
             scf.cf.param.set_value_raw(param, 0x08, value)
             scf.cf.param.request_param_update(param)
-
-        with SyncCrazyflie(test_setup.device.link_uri) as scf:
-            [group, name] = param.split('.')
-            scf.cf.param.all_updated.add_callback(all_updated_cb)
 
             tries = 5
             while not updated and tries > 0:
