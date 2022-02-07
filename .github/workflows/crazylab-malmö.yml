@@ -32,7 +32,10 @@ jobs:
       
       - name: Check out sources
         uses: actions/checkout@v2
-      
+
+      - name: Install requirements
+        run: pip3 install -r requirements.txt
+
       - name: Download latest firmware files
         with:
           repo: bitcraze/crazyflie-release
