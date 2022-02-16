@@ -19,7 +19,7 @@ import time
 @pytest.mark.parametrize(
     'test_setup',
     conftest.get_devices(),
-    indirect=['test_setup'],
+    indirect=True,
     ids=lambda d: d.name
 )
 class TestDecks:
