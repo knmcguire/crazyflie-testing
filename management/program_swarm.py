@@ -60,5 +60,5 @@ def program_swarm(fw_file: Path) -> bool:
 
 
 if __name__ == "__main__":
-    if not program_swarm(sys.argv[1]):
+    if not program_swarm(Path(sys.argv[1])):
         sys.exit(1)
