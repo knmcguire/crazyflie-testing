@@ -1,8 +1,8 @@
 crazyflies:
-- id: 0xA1
-  channel: 42
-  initialPosition: [0.0, 0.0, 0.0]
-  type: default
+# - id: 0xA1
+#   channel: 42
+#   initialPosition: [0.0, 0.0, 0.0]
+#   type: default
 
 - id: 0xA2
   channel: 42
