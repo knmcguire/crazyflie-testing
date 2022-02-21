@@ -16,6 +16,7 @@ import conftest
 import logging
 import time
 import random
+from threading import Event
 
 from cflib.crazyflie.syncCrazyflie import SyncCrazyflie
 
@@ -185,6 +186,85 @@ class TestParameters:
             param = "stabilizer.stop"
             with pytest.raises(AttributeError):
                 scf.cf.param.persistent_get_state(param, state_cb)
+
+    # Stresstest the eeprom by setting, clearing and 
+    #  setting the persistent parameter. This will create
+    #  holes in the eeprom memory which needs to be defragmented
+    # once it hits it limit, which should be between 250-300
+    # persistent parameters
+
+    def test_param_persistent_eeprom_stress(self, test_setup):
+
+        def get_persistent_state(cf, complete_param_name):
+            wait_for_callback_event = Event()
+            def state_callback(complete_name, state):
+                wait_for_callback_event.set()
+            cf.param.persistent_get_state(complete_param_name, state_callback)
+            assert wait_for_callback_event.wait(timeout=5)
+
+        def persist_parameter(cf, complete_param_name):
+            wait_for_callback_event = Event()
+            def is_stored_callback(complete_name, success):
+                wait_for_callback_event.set()
+            cf.param.persistent_store(complete_param_name, callback=is_stored_callback)
+            assert wait_for_callback_event.wait(timeout=5)
+
+        def clear_persistent_parameter(cf, complete_param_name):
+            wait_for_callback_event = Event()
+            def is_stored_cleared(complete_name, success):
+                wait_for_callback_event.set()
+            cf.param.persistent_clear(complete_param_name, callback=is_stored_cleared)
+            assert wait_for_callback_event.wait(timeout=5)
+            
+        def get_all_persistent_param_names(cf):
+            persistent_params = []
+            for group_name, params in cf.param.toc.toc.items():
+                for param_name, element in params.items():
+                    if element.is_persistent():
+                        complete_name = group_name + '.' + param_name
+                        persistent_params.append(complete_name)
+
+            return persistent_params
+
+        with SyncCrazyflie(test_setup.device.link_uri) as scf:
+            # Get the names of all parameters that can be persisted
+            persistent_params = get_all_persistent_param_names(scf.cf)
+            assert persistent_params is not None
+
+            total_time=[]
+            over_maximum_persist_parameter_value= 300
+            len_persist_params = len(persistent_params)
+            loop_iteration = round(over_maximum_persist_parameter_value/len_persist_params)
+            
+            # Set all existing parameters, for so many times to 
+            # hit the limits of the eeprom's memory
+            for i in range(0,loop_iteration):
+                for param_name in persistent_params:
+                    start_time=time.time()
+                    param_value=scf.cf.param.get_value(param_name)
+                    get_persistent_state(scf.cf, param_name)
+                    persist_parameter(scf.cf, param_name)
+                    get_persistent_state(scf.cf, param_name)
+                    clear_persistent_parameter(scf.cf, param_name)
+                    get_persistent_state(scf.cf, param_name)
+                    persist_parameter(scf.cf, param_name)
+                    total_time.append(time.time()-start_time)
+
+            # Assert when the average time to get, set, get, clear, get, 
+            # and set a persist parameter takes longer than 0.5 seconds, 
+            average_time = sum(total_time[1:])/len(total_time[1:])
+            assert average_time < 0.5
+
+            ## Due to the swisscheese in memory due to this test
+            ## we can add a test for how long the dfrac action takes
+            ## to push all the memory block close to eachother. 
+            ## This should not take longer than 2 seconds.
+            assert max(total_time[1:]) < 2.0
+
+            # Clear all set persistent parameters
+            for param_name in persistent_params:
+                    clear_persistent_parameter(scf.cf, param_name)
+
 
     def test_param_set_raw(self, test_setup):
         param = 'ring.effect'

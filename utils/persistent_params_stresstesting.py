@@ -6,7 +6,7 @@
 # | / ,--'  |    / /_/ / / /_/ /__/ /  / /_/ / / /_/  __/
 #    +------`   /_____/_/\__/\___/_/   \__,_/ /___/\___/
 #
-# Copyright (C) 2021 Bitcraze AB
+# Copyright (C) 2022 Bitcraze AB
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -35,12 +35,10 @@ from cflib.utils import uri_helper
 
 WITH_PLOTTING = False
 
-#uri = uri_helper.uri_from_env(default='usb://0')
 uri = uri_helper.uri_from_env(default='radio://0/40/2M/E7E7E7E706')
 
 # Only output errors from the logging framework
 logging.basicConfig(level=logging.ERROR)
-
 
 def get_persistent_state(cf, complete_param_name):
     wait_for_callback_event = Event()
