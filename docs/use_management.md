@@ -4,13 +4,14 @@ page_id: use_management
 ---
 
 In addition to tests this repository also includes some management tools, that allow you to perform operations on all devices in a site.
+They are located in the `management/` folder.
 
-| tool                                 | description                                           | usage                         |
-| ------------------------------------ | ----------------------------------------------------  | ----------------------------- |
-| `management/program.py`              | Flash binary or zip file on all devices.              | `program.py --file [file]`    |
-| `management/reboot.py`               | Reboot one or all devices.                            | `reboot.py [--name [device]]` |
-| `management/recover.py`              | Attempt to recover one or all devices from bootloader.| `recover.py [--name [device]]`|
-| `management/bootloader_addresses.py` | Get bootloader address from all devices.              | `bootloader_addresses.py`     |
+| tool                                 | description                                | usage                         |
+| ------------------------------------ | -------------------------------------------| ----------------------------- |
+| `program.py`              | Flash binary or zip file on all devices.              | `program.py --file [file]`    |
+| `reboot.py`               | Reboot one or all devices.                            | `reboot.py [--name [device]]` |
+| `recover.py`              | Attempt to recover one or all devices from bootloader.| `recover.py [--name [device]]`|
+| `bootloader_addresses.py` | Get bootloader address from all devices.              | `bootloader_addresses.py`     |
 
 To use this tools you need to specify what site to run against using the `CRAZY_SITE` environment variable.
 
