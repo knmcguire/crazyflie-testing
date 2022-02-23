@@ -191,32 +191,15 @@ class TestParameters:
     # persistent parameters
 
     def test_param_persistent_eeprom_stress(self, test_setup):
-        def get_persistent_state(cf, complete_param_name):
-            wait_for_callback_event = Event()
 
-            def state_callback(complete_name, state):
-                wait_for_callback_event.set()
+        max_avg_sec_per_parameter = 0.5  # in sec
+        max_sec_defrac = 2.0  # in sec
 
-            cf.param.persistent_get_state(complete_param_name, state_callback)
-            assert wait_for_callback_event.wait(timeout=5)
+        def is_stored_callback(complete_name, success):
+            assert success
 
-        def persist_parameter(cf, complete_param_name):
-            wait_for_callback_event = Event()
-
-            def is_stored_callback(complete_name, success):
-                wait_for_callback_event.set()
-
-            cf.param.persistent_store(complete_param_name, callback=is_stored_callback)
-            assert wait_for_callback_event.wait(timeout=5)
-
-        def clear_persistent_parameter(cf, complete_param_name):
-            wait_for_callback_event = Event()
-
-            def is_stored_cleared(complete_name, success):
-                wait_for_callback_event.set()
-
-            cf.param.persistent_clear(complete_param_name, callback=is_stored_cleared)
-            assert wait_for_callback_event.wait(timeout=5)
+        def is_stored_cleared(complete_name, success):
+            assert success
 
         def get_all_persistent_param_names(cf):
             persistent_params = []
@@ -246,28 +229,25 @@ class TestParameters:
                 for param_name in persistent_params:
                     start_time = time.time()
                     scf.cf.param.get_value(param_name)
-                    get_persistent_state(scf.cf, param_name)
-                    persist_parameter(scf.cf, param_name)
-                    get_persistent_state(scf.cf, param_name)
-                    clear_persistent_parameter(scf.cf, param_name)
-                    get_persistent_state(scf.cf, param_name)
-                    persist_parameter(scf.cf, param_name)
+                    scf.cf.param.persistent_store(param_name, is_stored_callback)
+                    scf.cf.param.persistent_clear(param_name, is_stored_cleared)
+                    scf.cf.param.persistent_store(param_name, is_stored_callback)
                     total_time.append(time.time() - start_time)
 
             # Assert when the average time to get, set, get, clear, get,
             # and set a persist parameter takes longer than 0.5 seconds,
             average_time = sum(total_time[1:]) / len(total_time[1:])
-            assert average_time < 0.5
+            assert average_time < max_avg_sec_per_parameter
 
             # Due to the swisscheese in memory due to this test
             # we can add a test for how long the dfrac action takes
             # to push all the memory block close to eachother.
             # This should not take longer than 2 seconds.
-            assert max(total_time[1:]) < 2.0
+            assert max(total_time[1:]) < max_sec_defrac
 
             # Clear all set persistent parameters
             for param_name in persistent_params:
-                clear_persistent_parameter(scf.cf, param_name)
+                scf.cf.param.persistent_clear(param_name, is_stored_cleared)
 
     def test_param_set_raw(self, test_setup):
         param = "ring.effect"
