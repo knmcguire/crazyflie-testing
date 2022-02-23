@@ -24,21 +24,18 @@ logger = logging.getLogger(__name__)
 
 
 @pytest.mark.parametrize(
-    'test_setup',
-    conftest.get_devices(),
-    indirect=['test_setup'],
-    ids=lambda d: d.name
+    "test_setup", conftest.get_devices(), indirect=["test_setup"], ids=lambda d: d.name
 )
 class TestParameters:
     def test_param_ronly(self, test_setup):
         with SyncCrazyflie(test_setup.device.link_uri) as scf:
             # Get a known (core) read-only parameter
-            param = 'deck.bcLighthouse4'
+            param = "deck.bcLighthouse4"
             element = scf.cf.param.toc.get_element_by_complete_name(param)
             assert element is not None
 
             # Make sure it is marked as read-only
-            assert element.get_readable_access() == 'RO'
+            assert element.get_readable_access() == "RO"
 
             # Make sure we get an error if we try to set it
             with pytest.raises(AttributeError):
@@ -47,14 +44,14 @@ class TestParameters:
     def test_param_extended_type(self, test_setup):
         with SyncCrazyflie(test_setup.device.link_uri) as scf:
             # Get a known persistent parameter
-            param = 'ring.effect'
+            param = "ring.effect"
             element = scf.cf.param.toc.get_element_by_complete_name(param)
             assert element is not None
             assert element.is_extended()
             assert element.is_persistent()
 
             # And a known non-persistent parameter
-            param = 'stabilizer.stop'
+            param = "stabilizer.stop"
             element = scf.cf.param.toc.get_element_by_complete_name(param)
             print(element.is_persistent)
             assert element is not None
@@ -63,14 +60,14 @@ class TestParameters:
 
     def test_param_persistent_store(self, test_setup):
         # Get a known persistent parameter
-        param = 'sound.effect'
+        param = "sound.effect"
 
         # Get a random valid value
         value = random.randint(8, 13)
 
         with SyncCrazyflie(test_setup.device.link_uri) as scf:
             # Set Value
-            logger.info(f'Setting value {value} as {param}')
+            logger.info(f"Setting value {value} as {param}")
             scf.cf.param.set_value(param, value)
 
             got_callback = False
@@ -101,7 +98,7 @@ class TestParameters:
     def test_param_persistent_clear(self, test_setup):
         with SyncCrazyflie(test_setup.device.link_uri) as scf:
             # Get a known persistent parameter
-            param = 'sound.effect'
+            param = "sound.effect"
 
             gotten_state = False
 
@@ -155,7 +152,7 @@ class TestParameters:
     def test_param_persistent_get_state(self, test_setup):
         with SyncCrazyflie(test_setup.device.link_uri) as scf:
             # Get a known persistent parameter
-            param = 'sound.effect'
+            param = "sound.effect"
 
             gotten_state = False
 
@@ -164,7 +161,7 @@ class TestParameters:
 
                 assert name == param
                 assert state is not None
-                logger.info(f'state: {state}')
+                logger.info(f"state: {state}")
                 assert isinstance(state.is_stored, bool)
                 assert state.default_value == 0
                 if state.is_stored:
@@ -187,41 +184,46 @@ class TestParameters:
             with pytest.raises(AttributeError):
                 scf.cf.param.persistent_get_state(param, state_cb)
 
-    # Stresstest the eeprom by setting, clearing and 
+    # Stresstest the eeprom by setting, clearing and
     #  setting the persistent parameter. This will create
     #  holes in the eeprom memory which needs to be defragmented
     # once it hits it limit, which should be between 250-300
     # persistent parameters
 
     def test_param_persistent_eeprom_stress(self, test_setup):
-
         def get_persistent_state(cf, complete_param_name):
             wait_for_callback_event = Event()
+
             def state_callback(complete_name, state):
                 wait_for_callback_event.set()
+
             cf.param.persistent_get_state(complete_param_name, state_callback)
             assert wait_for_callback_event.wait(timeout=5)
 
         def persist_parameter(cf, complete_param_name):
             wait_for_callback_event = Event()
+
             def is_stored_callback(complete_name, success):
                 wait_for_callback_event.set()
+
             cf.param.persistent_store(complete_param_name, callback=is_stored_callback)
             assert wait_for_callback_event.wait(timeout=5)
 
         def clear_persistent_parameter(cf, complete_param_name):
             wait_for_callback_event = Event()
+
             def is_stored_cleared(complete_name, success):
                 wait_for_callback_event.set()
+
             cf.param.persistent_clear(complete_param_name, callback=is_stored_cleared)
             assert wait_for_callback_event.wait(timeout=5)
-            
+
         def get_all_persistent_param_names(cf):
             persistent_params = []
             for group_name, params in cf.param.toc.toc.items():
                 for param_name, element in params.items():
                     if element.is_persistent():
-                        complete_name = group_name + '.' + param_name
+                        complete_name = group_name + "." + param_name
                         persistent_params.append(complete_name)
 
             return persistent_params
@@ -231,43 +233,44 @@ class TestParameters:
             persistent_params = get_all_persistent_param_names(scf.cf)
             assert persistent_params is not None
 
-            total_time=[]
-            over_maximum_persist_parameter_value= 300
+            total_time = []
+            over_maximum_persist_parameter_value = 300
             len_persist_params = len(persistent_params)
-            loop_iteration = round(over_maximum_persist_parameter_value/len_persist_params)
-            
-            # Set all existing parameters, for so many times to 
+            loop_iteration = round(
+                over_maximum_persist_parameter_value / len_persist_params
+            )
+
+            # Set all existing parameters, for so many times to
             # hit the limits of the eeprom's memory
-            for i in range(0,loop_iteration):
+            for i in range(0, loop_iteration):
                 for param_name in persistent_params:
-                    start_time=time.time()
-                    param_value=scf.cf.param.get_value(param_name)
+                    start_time = time.time()
+                    param_value = scf.cf.param.get_value(param_name)
                     get_persistent_state(scf.cf, param_name)
                     persist_parameter(scf.cf, param_name)
                     get_persistent_state(scf.cf, param_name)
                     clear_persistent_parameter(scf.cf, param_name)
                     get_persistent_state(scf.cf, param_name)
                     persist_parameter(scf.cf, param_name)
-                    total_time.append(time.time()-start_time)
+                    total_time.append(time.time() - start_time)
 
-            # Assert when the average time to get, set, get, clear, get, 
-            # and set a persist parameter takes longer than 0.5 seconds, 
-            average_time = sum(total_time[1:])/len(total_time[1:])
+            # Assert when the average time to get, set, get, clear, get,
+            # and set a persist parameter takes longer than 0.5 seconds,
+            average_time = sum(total_time[1:]) / len(total_time[1:])
             assert average_time < 0.5
 
             ## Due to the swisscheese in memory due to this test
             ## we can add a test for how long the dfrac action takes
-            ## to push all the memory block close to eachother. 
+            ## to push all the memory block close to eachother.
             ## This should not take longer than 2 seconds.
             assert max(total_time[1:]) < 2.0
 
             # Clear all set persistent parameters
             for param_name in persistent_params:
-                    clear_persistent_parameter(scf.cf, param_name)
-
+                clear_persistent_parameter(scf.cf, param_name)
 
     def test_param_set_raw(self, test_setup):
-        param = 'ring.effect'
+        param = "ring.effect"
         value = 13  # Gravity effect
         updated = False
 
@@ -281,16 +284,12 @@ class TestParameters:
             updated = True
 
         with SyncCrazyflie(test_setup.device.link_uri) as scf:
-            [group, name] = param.split('.')
+            [group, name] = param.split(".")
 
             scf.wait_for_params()
 
             # 0x08 = UINT_8,
-            scf.cf.param.add_update_callback(
-                group=group,
-                name=name,
-                cb=param_raw_cb
-            )
+            scf.cf.param.add_update_callback(group=group, name=name, cb=param_raw_cb)
             scf.cf.param.set_value_raw(param, 0x08, value)
             scf.cf.param.request_param_update(param)
 
@@ -302,7 +301,7 @@ class TestParameters:
             assert updated
 
     def test_param_set(self, test_setup):
-        param = 'stabilizer.estimator'
+        param = "stabilizer.estimator"
 
         def param_cb(name: str, value: str):
             nonlocal expected
@@ -312,18 +311,14 @@ class TestParameters:
             assert expected.pop(0) == int(value)
 
         with SyncCrazyflie(test_setup.device.link_uri) as scf:
-            [group, name] = param.split('.')
+            [group, name] = param.split(".")
 
             initial = scf.cf.param.get_value(param)
             assert initial is not None
 
             expected = [2, 1, 2, 1, int(initial)]
 
-            scf.cf.param.add_update_callback(
-                group=group,
-                name=name,
-                cb=param_cb
-            )
+            scf.cf.param.add_update_callback(group=group, name=name, cb=param_cb)
 
             scf.cf.param.set_value(param, 2)
             scf.cf.param.set_value(param, 1)
