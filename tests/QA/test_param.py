@@ -219,9 +219,8 @@ class TestParameters:
             total_time = []
             over_maximum_persist_parameter_value = 300
             len_persist_params = len(persistent_params)
-            loop_iteration = round(
-                over_maximum_persist_parameter_value / len_persist_params
-            )
+            loop_iteration = 
+                over_maximum_persist_parameter_value // len_persist_params
 
             # Set all existing parameters, for so many times to
             # hit the limits of the eeprom's memory
