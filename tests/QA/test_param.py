@@ -245,7 +245,7 @@ class TestParameters:
             for i in range(0, loop_iteration):
                 for param_name in persistent_params:
                     start_time = time.time()
-                    param_value = scf.cf.param.get_value(param_name)
+                    scf.cf.param.get_value(param_name)
                     get_persistent_state(scf.cf, param_name)
                     persist_parameter(scf.cf, param_name)
                     get_persistent_state(scf.cf, param_name)
@@ -259,10 +259,10 @@ class TestParameters:
             average_time = sum(total_time[1:]) / len(total_time[1:])
             assert average_time < 0.5
 
-            ## Due to the swisscheese in memory due to this test
-            ## we can add a test for how long the dfrac action takes
-            ## to push all the memory block close to eachother.
-            ## This should not take longer than 2 seconds.
+            # Due to the swisscheese in memory due to this test
+            # we can add a test for how long the dfrac action takes
+            # to push all the memory block close to eachother.
+            # This should not take longer than 2 seconds.
             assert max(total_time[1:]) < 2.0
 
             # Clear all set persistent parameters
