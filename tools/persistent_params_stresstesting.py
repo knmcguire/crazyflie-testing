@@ -20,8 +20,15 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 """
-This script reads a list of persistent parameters, sets clears and resets
-each one of them
+== Eeprom operations diagnostics for persistent parameters ==
+
+This script reads a list of persistent parameters, sets, clears and sets
+each one of them. This will cause a swiss cheese effect in the eemprom memory,
+which will be defracmented after about 270 set-resets.
+
+This script also monitors the times that each operation takes. 
+
+Setting the WITH_PLOTTING define to True, these times will be plotted as well.
 """
 import logging
 import sys
