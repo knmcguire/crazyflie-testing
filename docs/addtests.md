@@ -1,20 +1,24 @@
-# Copyright (C) 2021 Bitcraze AB
-#
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, in version 3.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program. If not, see <http://www.gnu.org/licenses/>.
+---
+title: Adding tests
+page_id: dev_addtests
+---
+
+The tests in this repository is written using the [pytest](https://docs.pytest.org/en/7.0.x/) framework and they make use of special [fixtures](fixtures.md) to integrate with the available test [sites](sites.md).
+
+## Where to add tests?
+
+Tests should be added under the `tests/` folder. Right now we have a convention that tests that are to be run automagicly by sites, such as the [Crazylab](https://www.bitcraze.io/2021/08/the-beginnings-of-a-test-lab/), should be put in the `tests/QA` folder. Tests that require flying or human intervention should not be put in the `QA` folder.
+
+We also have a special folder `tests/crazyswarm` for tests that are special to the [Crazyswarm project](https://crazyswarm.readthedocs.io/en/latest/).
+
+
+## Example test
+For an example of how an pytest, interacting with sites, can look, see below:
+
+```python
 import pytest
 import conftest
 import time
-
 
 #
 # Using the indirect=True parameter when parametrizing a test allows to
@@ -59,3 +63,4 @@ class TestDecks:
 
         for deck in test_setup.device.decks:
             assert deck in discovered
+```

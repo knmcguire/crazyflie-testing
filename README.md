@@ -12,7 +12,7 @@ Before running the test suite you need to define a site in the `sites/` folder.
 The site `TOML` tells the test suite which devices to tests, what capabilities
 and decks they have, and how to reach them.
 
-See the file `sites/single-cf.toml` for the site file format to define new test sites.
+See [site docmentation](docs/sites.md) for the site file format to define new test sites.
 ## Running the test
 
 To run the test for a single Crazyflie, run:
@@ -21,19 +21,11 @@ CRAZY_SITE=single-cf pytest --verbose tests/QA
 ```
 
 If you have defined your own site, then change the `CRAZY_SITE` environment
-variable to reflect that.
+variable to reflect that. For more information see the [running tests documentation](docs/usetests.md).
 
 ## Management
 There are some scripts in the `management/` folder to help manage the devices
-in your site.
-
-```
-management/program.py               - Flash a firmware file to devices in site
-management/bootloader_addresses.py  - List all devices bootloader addresses
-management/recover.py               - Attempt to recover one or all device(s)
-                                      from bootloader mode
-management/program_swarm.py         - Flash a firmware file to devices in a swarm
-```
+in your site. For details see the [management documentation](docs/use_management.md).
 
 ## Testing with Crazyswarm
 It also possible to test using the [Crazyswarm](https://github.com/USC-ACTLab/crazyswarm) project.

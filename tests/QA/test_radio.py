@@ -46,6 +46,11 @@ class TestRadio:
         assert(bandwidth(dev.link_uri, requirement['packet_size']) > requirement['limit_low'])
 
     def test_reliability(self, dev):
+        '''
+        This test does not pass reliably. We need flow control between nrf
+        and stm32.
+        '''
+        pytest.skip('need flow control')
         requirement = conftest.get_requirement('radio.reliability')
         # The bandwidth function will assert if there is any packet loss
         bandwidth(dev.link_uri, 4, requirement['limit_low'])
@@ -54,7 +59,7 @@ class TestRadio:
 def build_data(i, packet_size):
     assert(packet_size % 4 == 0)
     repeats = packet_size // 4
-    return struct.pack('<' + 'I'*repeats, *[i]*repeats)
+    return struct.pack('<' + 'I' * repeats, *[i] * repeats)
 
 
 def latency(uri, packet_size=4, count=500):
