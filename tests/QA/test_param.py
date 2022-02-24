@@ -191,15 +191,25 @@ class TestParameters:
     # persistent parameters
 
     def test_param_persistent_eeprom_stress(self, test_setup):
+        wait_for_callback_event = Event()
 
         max_avg_sec_per_parameter = 0.5  # in sec
         max_sec_defrac = 2.0  # in sec
 
+        def get_state_callback(complete_name, state):
+            assert state is not None
+            wait_for_callback_event.set()
+
+
         def is_stored_callback(complete_name, success):
             assert success
+            wait_for_callback_event.set()
+
 
         def is_stored_cleared(complete_name, success):
             assert success
+            wait_for_callback_event.set()
+
 
         def get_all_persistent_param_names(cf):
             persistent_params = []
@@ -210,6 +220,10 @@ class TestParameters:
                         persistent_params.append(complete_name)
 
             return persistent_params
+
+        def event_wait_and_clear():
+            assert wait_for_callback_event.wait(timeout=5)
+            wait_for_callback_event.clear()
 
         with SyncCrazyflie(test_setup.device.link_uri) as scf:
             # Get the names of all parameters that can be persisted
@@ -227,9 +241,18 @@ class TestParameters:
                 for param_name in persistent_params:
                     start_time = time.time()
                     scf.cf.param.get_value(param_name)
+                    scf.cf.param.persistent_get_state(param_name, get_state_callback)
+                    event_wait_and_clear()
                     scf.cf.param.persistent_store(param_name, is_stored_callback)
+                    event_wait_and_clear()
+                    scf.cf.param.persistent_get_state(param_name, get_state_callback)
+                    event_wait_and_clear()
                     scf.cf.param.persistent_clear(param_name, is_stored_cleared)
+                    event_wait_and_clear()
                     scf.cf.param.persistent_store(param_name, is_stored_callback)
+                    event_wait_and_clear()
+                    scf.cf.param.persistent_get_state(param_name, get_state_callback)
+                    event_wait_and_clear()
                     total_time.append(time.time() - start_time)
 
             # Assert when the average time to get, set, get, clear, get,
